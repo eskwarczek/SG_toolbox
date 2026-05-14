@@ -1,0 +1,67 @@
+﻿<?xml version="1.0" encoding="utf-8"?><messages><msg code="0" type="2">Start Time: czwartek, 14 maja 2026 14:46:46</msg><msg code="0" type="0">Łączenie z ArcGIS Online...</msg><msg code="0" type="0">Zalogowano jako: eskwarczek</msg><msg code="1" type="100">Wystąpił błąd: An unknown error occurred: Traceback (most recent call last):
+  File "C:\Program Files\ArcGIS\Pro\bin\Python\envs\arcgispro-py3\Lib\site-packages\arcgis\gis\_impl\_con\_connection.py", line 1472, in post
+    resp = self._session.post(
+        url=url,
+    ...&lt;5 lines&gt;...
+        allow_redirects=allow_redirects,
+    )
+  File "C:\Program Files\ArcGIS\Pro\bin\Python\envs\arcgispro-py3\Lib\site-packages\arcgis\auth\api.py", line 584, in post
+    return self._session.post(
+           ~~~~~~~~~~~~~~~~~~^
+        url,
+        ^^^^
+    ...&lt;4 lines&gt;...
+        **kwargs,
+        ^^^^^^^^^
+    )
+    ^
+  File "C:\Program Files\ArcGIS\Pro\bin\Python\envs\arcgispro-py3\Lib\site-packages\requests\sessions.py", line 637, in post
+    return self.request("POST", url, data=data, json=json, **kwargs)
+           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Program Files\ArcGIS\Pro\bin\Python\envs\arcgispro-py3\Lib\site-packages\requests\sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+  File "C:\Program Files\ArcGIS\Pro\bin\Python\envs\arcgispro-py3\Lib\site-packages\requests\sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+  File "C:\Program Files\ArcGIS\Pro\bin\Python\envs\arcgispro-py3\Lib\site-packages\arcgis\auth\tools\_adapter.py", line 288, in send
+    return super(EsriTrustStoreAdapter, self).send(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        request, stream, timeout, verify, cert, proxies
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Program Files\ArcGIS\Pro\bin\Python\envs\arcgispro-py3\Lib\site-packages\requests\adapters.py", line 644, in send
+    resp = conn.urlopen(
+        method=request.method,
+    ...&lt;9 lines&gt;...
+        chunked=chunked,
+    )
+  File "C:\Program Files\ArcGIS\Pro\bin\Python\envs\arcgispro-py3\Lib\site-packages\urllib3\connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+        conn,
+    ...&lt;10 lines&gt;...
+        **response_kw,
+    )
+  File "C:\Program Files\ArcGIS\Pro\bin\Python\envs\arcgispro-py3\Lib\site-packages\urllib3\connectionpool.py", line 534, in _make_request
+    response = conn.getresponse()
+  File "C:\Program Files\ArcGIS\Pro\bin\Python\envs\arcgispro-py3\Lib\site-packages\urllib3\connection.py", line 565, in getresponse
+    httplib_response = super().getresponse()
+  File "C:\Program Files\ArcGIS\Pro\bin\Python\envs\arcgispro-py3\Lib\http\client.py", line 1430, in getresponse
+    response.begin()
+    ~~~~~~~~~~~~~~^^
+  File "C:\Program Files\ArcGIS\Pro\bin\Python\envs\arcgispro-py3\Lib\http\client.py", line 331, in begin
+    version, status, reason = self._read_status()
+                              ~~~~~~~~~~~~~~~~~^^
+  File "C:\Program Files\ArcGIS\Pro\bin\Python\envs\arcgispro-py3\Lib\http\client.py", line 292, in _read_status
+    line = str(self.fp.readline(_MAXLINE + 1), "iso-8859-1")
+               ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^
+  File "C:\Program Files\ArcGIS\Pro\bin\Python\envs\arcgispro-py3\Lib\socket.py", line 719, in readinto
+    return self._sock.recv_into(b)
+           ~~~~~~~~~~~~~~~~~~~~^^^
+  File "C:\Program Files\ArcGIS\Pro\bin\Python\envs\arcgispro-py3\Lib\ssl.py", line 1304, in recv_into
+    return self.read(nbytes, buffer)
+           ~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "C:\Program Files\ArcGIS\Pro\bin\Python\envs\arcgispro-py3\Lib\ssl.py", line 1138, in read
+    return self._sslobj.read(len, buffer)
+           ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+KeyboardInterrupt
+</msg><msg code="0" type="200">Canceled function</msg><msg code="0" type="200">Canceled script Backup danych z AGOL...</msg><msg code="-2147467259" type="100">Failed to execute (BackupSkrypt).</msg><msg code="0" type="3">Failed at czwartek, 14 maja 2026 14:47:04 (Elapsed Time: 17,97 seconds)</msg></messages>
