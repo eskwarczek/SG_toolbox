@@ -1,4 +1,5 @@
 import os
+import urllib.request
 import zipfile
 import shutil
 from datetime import datetime
@@ -46,6 +47,15 @@ def utworz_geobaze(folder_docelowy, nazwa_gdb):
         arcpy.AddMessage(f"Tworzenie geobazy: {nazwa_gdb}")
         arcpy.CreateFileGDB_management(folder_docelowy, nazwa_gdb)
     return sciezka_gdb
+
+def sprawdz_pobieranie(url="https://www.arcgis.com", timeout=10):
+    try:
+        with urllib.request.urlopen(url, timeout=timeout):
+            pass
+        return True
+    except Exception as e:
+        arcpy.AddError(f"Timeout serwisu: {e}")
+        return False
 
 def pobierz_hosted_layers(gis, limit_warstw):
     user = gis.users.me
@@ -105,6 +115,9 @@ def eksportuj_warstwy_do_gdb(hosted_layers, sciezka_gdb, dodaj_do_mapy):
                                 sciezka_gdb
                             )
 
+                            if nowa_nazwa[0].isdigit():
+                                nowa_nazwa = f"_{nowa_nazwa}"
+
                             arcpy.FeatureClassToFeatureClass_conversion(
                                 fc,
                                 sciezka_gdb,
@@ -134,15 +147,57 @@ def eksportuj_warstwy_do_gdb(hosted_layers, sciezka_gdb, dodaj_do_mapy):
             arcpy.AddError(f"  Błąd podczas importu {layer.title}: {str(e)}")
 
 def zipuj_geobaze(sciezka_gdb, sciezka_zip):
-    arcpy.AddMessage(f"Pakowanie geobazy do ZIP...")
-    with zipfile.ZipFile(sciezka_zip, "w", zipfile.ZIP_DEFLATED) as zipf:
-        for root, dirs, files in os.walk(sciezka_gdb):
-            for file in files:
-                if file.endswith('.lock'):
-                    continue
-                full_path = os.path.join(root, file)
-                rel_path = os.path.relpath(full_path, os.path.dirname(sciezka_gdb))
-                zipf.write(full_path, rel_path)
+    try:
+        arcpy.AddMessage(f"Pakowanie geobazy do ZIP...")
+        with zipfile.ZipFile(sciezka_zip, "w", zipfile.ZIP_DEFLATED) as zipf:
+            for root, dirs, files in os.walk(sciezka_gdb):
+                for file in files:
+                    if file.endswith('.lock'):
+                        continue
+                    full_path = os.path.join(root, file)
+                    rel_path = os.path.relpath(full_path, os.path.dirname(sciezka_gdb))
+                    zipf.write(full_path, rel_path)
+    except PermissionError:
+        arcpy.AddError("Brak uprawnień do utworzenia ZIP (plik jest używany)")
+        return False
+
+    except OSError as e:
+        arcpy.AddError(f"Błąd systemowy ZIP: {e}")
+        return False
+
+    except Exception as e:
+        arcpy.AddError(f"Błąd tworzenia ZIP: {e}")
+        return False
+    
+def sprawdz_zapis(folder, layers):
+    try:
+        test_file = os.path.join(folder, "test_write.tmp")
+        with open(test_file, "w") as f:
+            f.write("test")
+        os.remove(test_file)
+
+    except PermissionError:
+        arcpy.AddError("Brak uprawnień do zapisu w folderze backupu")
+        return False
+    
+    except Exception as e:
+        arcpy.AddError(f"Folder niedostępny: {e}")
+        return False
+    
+    try:
+        dostepne_bity = shutil.disk_usage(folder).free
+        dostepne_miejsce = dostepne_bity / (1024*1024)
+        potrzebne_miejsce = len(layers) * 50
+
+        if dostepne_miejsce < potrzebne_miejsce:
+            arcpy.AddError(f"Brak miejsca na dysku (dostępne: {dostepne_miejsce:.1f} MB, wymagane ~{potrzebne_miejsce} MB)")
+            return False
+
+    except Exception as e:
+        arcpy.AddError(f"Błąd sprawdzania dysku: {e}")
+        return False
+    
+    return True
 
 if __name__ == "__main__":
     # Parametr wejściowy
@@ -179,6 +234,9 @@ if __name__ == "__main__":
     gis = GIS("home")
     arcpy.AddMessage(f"Zalogowano jako: {gis.users.me.username}")
 
+    if not sprawdz_pobieranie():
+        raise SystemExit()
+
     # Przygotowanie nazw
     nazwa_backupu = utworz_nazwe_backupu(folder_backupu)
     nazwa_gdb = f"{nazwa_backupu}.gdb"
@@ -188,6 +246,10 @@ if __name__ == "__main__":
     # Logika główna
     layers = pobierz_hosted_layers(gis, limit_warstw)
     arcpy.AddMessage(f"Znaleziono {len(layers)} hosted feature layers do pobrania.")
+
+    if not sprawdz_zapis(folder_backupu, layers):
+        arcpy.AddError("Brak miejsca na dysku lub brak dostępu do folderu backupu")
+        raise SystemExit()
     
     eksportuj_warstwy_do_gdb(layers, sciezka_gdb, dodaj_do_mapy)
     zipuj_geobaze(sciezka_gdb, sciezka_zip)
